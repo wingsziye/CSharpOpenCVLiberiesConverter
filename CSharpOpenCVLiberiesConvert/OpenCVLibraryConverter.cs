@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Emgu.CV.CvEnum;
 using OpenCvSharp.Extensions;
 
 namespace CSharpOpenCVLiberiesConvert
@@ -18,20 +19,23 @@ namespace CSharpOpenCVLiberiesConvert
         #region MatOpenCVSharpToEmgu (public : OpenCVSharp库的Mat转EmguCV库的Mat)
         public static Emgu.CV.Mat MatOpenCVSharpToEmgu(OpenCvSharp.Mat opcvsMat)
         {
-            #region Obsolte,convert through bytes,可能丢失某些信息
-            //var emguMat = new Emgu.CV.Mat();
-            //Emgu.CV.CvInvoke.Imdecode(opcvsMat.ToBytes(), Emgu.CV.CvEnum.LoadImageType.AnyColor, emguMat);            
-            //return emguMat;
+            #region convert through bytes
+            var emguMat = new Emgu.CV.Mat();
+            Emgu.CV.CvInvoke.Imdecode(opcvsMat.ToBytes(), ImreadModes.AnyColor, emguMat);
+            return emguMat;
             #endregion
+
             #region Obsolte,convert through bitmap,可能丢失某些信息
             //System.Drawing.Bitmap bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(opcvsMat.ToIplImage());
             //var img = new Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte>(bitmap);
             //return img.Mat;
             #endregion
 
-            #region 正在应用,OpenCvSharp CvPtr指针 Emgu CvArrToMat
-            var emptr = Emgu.CV.CvInvoke.CvArrToMat(opcvsMat.CvPtr, true);
-            return emptr;
+            #region Error,OpenCvSharp CvPtr指针 Emgu CvArrToMat 
+            //Error message : OpenCV: Unknown array type
+            //Error reason : the IntPtr parameter of CvArrToMat must be IplImage or CvMatND
+            //var emguMat = Emgu.CV.CvInvoke.CvArrToMat(opcvsMat.CvPtr, true);
+            //return emguMat;
             #endregion
         }
         #endregion
@@ -54,8 +58,7 @@ namespace CSharpOpenCVLiberiesConvert
         #region LoadMatFromFile (public : 从文件读取Mat)
         public static void LoadMatFromFile(String fileName, ref Emgu.CV.Mat mat)
         {
-            mat = null;
-            mat = new Emgu.CV.Mat(fileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
+            mat = new Emgu.CV.Mat(fileName, Emgu.CV.CvEnum.ImreadModes.AnyColor);
         }
 
         public static void LoadMatFromFile(String fileName, ref OpenCvSharp.Mat mat)
